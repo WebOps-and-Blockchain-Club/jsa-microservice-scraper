@@ -1,6 +1,6 @@
 version: "3.9"
 services:
-  web:
+  server:
     container_name: jsa_server
     build: .
     ports:
