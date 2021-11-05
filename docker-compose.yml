@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  web:
+    container_name: jsa_server
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/opt
+    links:
+      - db
+    networks:
+      - jsa_net
+  db:
+    container_name: jsa_db
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - mongo-data:/data/db
+      - mongo-configdb:/data/configdb
+    ports:
+      - "27017:27017"
+    networks:
+      - jsa_net
+networks:
+  jsa_net:
+    driver: bridge
+volumes:
+  mongo-data:
+  mongo-configdb:
