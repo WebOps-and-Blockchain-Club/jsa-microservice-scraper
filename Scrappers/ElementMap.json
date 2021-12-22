@@ -1,0 +1,32 @@
+{
+  "GD_modalCloseButton": ["CLASS_NAME", "modal_closeIcon"],
+  "GD_jsonRes": ["TAG_NAME", "pre"],
+  "GD_jobListPath": [
+    "XPATH",
+    "/html/body/div[3]/div/div/div[1]/div/div[2]/section/article/div[1]/ul"
+  ],
+  "GD_DetailsBoxID": ["ID", "JDCol"],
+  "GD_OverViewBoxClass": ["CLASS_NAME", "css-9ml2tt"],
+  "GD_KeyClassName": ["CLASS_NAME", "css-xuk5ye"],
+  "GD_TitleClassName": ["CLASS_NAME", "css-1j389vi"],
+  "GD_LocationClassName": ["CLASS_NAME", "css-56kyx5"],
+  "GD_SalaryClassName": ["CLASS_NAME", "css-1hbqxax"],
+  "GD_ShowMoreButtonClassName": ["CLASS_NAME", "css-t3xrds"],
+  "GD_datasetList": ["CLASS_NAME", "react-job-listing"],
+  "GD_jobLink": ["CLASS_NAME", "jobLink"],
+  "GD_DescriptionBoxId": ["ID", "JobDescriptionContainer"],
+  "GD_JobDescriptionContentClass": ["CLASS_NAME", "jobDescriptionContent"],
+  "NK_jobCardListContainer": [
+    "XPATH",
+    "/html/body/div[1]/div[3]/div[2]/section[2]/div[2]"
+  ],
+  "NK_link": ["CSS_SELECTOR", "a"],
+  "NK_jobCard": ["CSS_SELECTOR", "article"],
+  "NK_LeftSection": ["CLASS_NAME", "leftSec"],
+  "NK_titleClass": ["CLASS_NAME", "jd-header-title"],
+  "NK_companyName": ["CLASS_NAME", "jd-header-comp-name"],
+  "NK_Experience": ["CLASS_NAME", "exp"],
+  "NK_Salary": ["CLASS_NAME", "salary"],
+  "NK_Location": ["CLASS_NAME", "loc"],
+  "NK_DescriptionHTML": ["CLASS_NAME", "dang-inner-html"]
+}
