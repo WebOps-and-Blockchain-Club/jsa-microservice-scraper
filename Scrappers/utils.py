@@ -2,9 +2,11 @@ import json
 import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from dotenv import load_dotenv
+
+load_dotenv()
 
 ElementMap = dict()
-
 # read from file
 with open(os.path.join(os.path.dirname(__file__), "ElementMap.json"), "r") as json_file:
     ElementMap: dict = json.load(json_file)
@@ -18,9 +20,10 @@ BY: dict = {
     "TAG_NAME": By.TAG_NAME,
 }
 
-DRIVER_PATH = "D:\driver\geckodriver.exe"
+DRIVER_PATH = os.environ["DRIVER_PATH"]
 options = Options()
-options.headless = True
+# options.headless = True
+options.set_preference("devtools.jsonview.enabled", False)
 driverParams = {
     "options": options,
     "executable_path": DRIVER_PATH,

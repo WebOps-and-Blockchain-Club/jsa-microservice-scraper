@@ -9,16 +9,14 @@ import utils as ut
 
 @ray.remote
 def start_scraping_glassdoor(
-    job_location, job_title, callbackFn: Callable[[dict], None] = None, utils=ut
+    job_location,
+    job_title,
+    callbackFn: Callable[[dict], None] = None,
+    utils=ut,
 ):
     print("Starting scraping glassdoor")
     driverParams = utils.getDriverParams()
-    fp = webdriver.FirefoxProfile()
-    fp.set_preference("devtools.jsonview.enabled", False)
-    driver = webdriver.Firefox(
-        **driverParams,
-        firefox_profile=fp,
-    )
+    driver = webdriver.Firefox(**driverParams)
     driver.maximize_window()
     driver.delete_all_cookies()
 
@@ -142,3 +140,14 @@ def start_scraping_glassdoor(
             if count > 5:
                 break
     return jobDetailsList
+
+
+if __name__ == "__main__":
+    ray.init()
+    ray.get(
+        [
+            start_scraping_glassdoor.remote(
+                "Pune", "Data Scientist", callbackFn=ut.print_result
+            )
+        ]
+    )

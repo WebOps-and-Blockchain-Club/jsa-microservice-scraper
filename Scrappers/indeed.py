@@ -74,3 +74,14 @@ def start_scraping_indeed(
         data_list.append(data)
         callbackFn(data)
     return data_list
+
+
+if __name__ == "__main__":
+    ray.init()
+    ray.get(
+        [
+            start_scraping_indeed.remote(
+                "Pune", "Data Scientist", callbackFn=ut.print_result
+            )
+        ]
+    )

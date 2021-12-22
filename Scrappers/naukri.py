@@ -34,6 +34,7 @@ def start_scraping_naukri(
     data_list = []
     for link in links:
         driver.get(link)
+        driver.implicitly_wait(0.3)
         jobDetails = {}
         try:
             detailsBox = utils.FINDELEMENT(driver, "NK_LeftSection")
@@ -82,3 +83,14 @@ def start_scraping_naukri(
             callbackFn(jobDetails)
         data_list.append(jobDetails)
     return data_list
+
+
+if __name__ == "__main__":
+    ray.init()
+    ray.get(
+        [
+            start_scraping_naukri.remote(
+                "Pune", "Data Scientist", callbackFn=ut.print_result
+            )
+        ]
+    )
