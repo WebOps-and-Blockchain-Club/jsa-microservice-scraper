@@ -28,5 +28,16 @@
   "NK_Experience": ["CLASS_NAME", "exp"],
   "NK_Salary": ["CLASS_NAME", "salary"],
   "NK_Location": ["CLASS_NAME", "loc"],
-  "NK_DescriptionHTML": ["CLASS_NAME", "dang-inner-html"]
+  "NK_DescriptionHTML": ["CLASS_NAME", "dang-inner-html"],
+  "ID_jobListContainer": ["ID", "mosaic-provider-jobcards"],
+  "ID_jobCard": ["CLASS_NAME", "fs-unmask"],
+  "ID_titleBox": ["CLASS_NAME", "jobTitle"],
+  "ID_title": ["TAG_NAME", "span"],
+  "ID_empAndLoc": ["CLASS_NAME", "company_location"],
+  "ID_emp": ["TAG_NAME", "span"],
+  "ID_loc": ["CLASS_NAME", "companyLocation"],
+  "ID_salary": ["CLASS_NAME", "salary-snippet"],
+  "ID_descHTML": ["CLASS_NAME", "job-snippet"],
+  "ID_iframe": ["ID", "vjs-container-iframe"],
+  "ID_iframeDescHTML": ["ID", "jobDescriptionText"]
 }

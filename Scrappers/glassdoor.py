@@ -1,10 +1,9 @@
 import ray
-import time
 from typing import Callable
-from selenium.webdriver.common.by import By
 from selenium import webdriver
-import json
 import utils as ut
+from utils import FIELD as F
+from utils import JOBDESK as J
 
 
 @ray.remote
@@ -12,7 +11,7 @@ def start_scraping_glassdoor(
     job_location,
     job_title,
     callbackFn: Callable[[dict], None] = None,
-    utils=ut,
+    utils: ut = ut,
 ):
     print("Starting scraping glassdoor")
     driverParams = utils.getDriverParams()
@@ -25,8 +24,7 @@ def start_scraping_glassdoor(
     driver.get(locationIDLink)
 
     jsonRes = utils.FINDELEMENT(driver, "GD_jsonRes").text
-    jsonRes = json.loads(jsonRes)
-    jsonRes
+    jsonRes = ut.json_to_dict(jsonRes)
 
     locDet = jsonRes["locations"][0]
     locID = str(locDet["id"])
@@ -52,7 +50,7 @@ def start_scraping_glassdoor(
         try:
             modalCloseButton = utils.FINDELEMENT(driver, "GD_modalCloseButton")
             modalCloseButton.click()
-            time.sleep(0.1)
+            driver.implicitly_wait(0.1)
         except:
             pass
 
@@ -65,43 +63,43 @@ def start_scraping_glassdoor(
         try:
             jobCard.click()
         except:
-            time.sleep(0.1)
+            driver.implicitly_wait(0.1)
             continue
         try_close_popup()
-        jobDetails = {"from": "glassdoor"}
+        jobDetails = {}
+        jobDetails[F.JOB_DESK] = J.GLASSDOOR
         count = 0
         try:
             anchor = utils.FINDELEMENT(jobCard, "GD_jobLink")
             anchor.get_attribute("href")
-            jobDetails["job_link"] = anchor.get_attribute("href")
+            jobDetails[F.JOB_LINK] = anchor.get_attribute("href")
         except:
-            jobDetails["job_link"] = "NA"
+            jobDetails[F.JOB_LINK] = F.NA
         while True:
             count += 1
-            time.sleep(0.1)
+            driver.implicitly_wait(0.1)
             try:
                 AllDetailsBox = utils.FINDELEMENT(driver, "GD_DetailsBoxID")
                 OverViewBox = utils.FINDELEMENT(AllDetailsBox, "GD_OverViewBoxClass")
                 Title = utils.FINDELEMENT(OverViewBox, "GD_TitleClassName").text
-                jobDetails["title"] = Title
+                jobDetails[F.JOB_TITLE] = Title
                 DescriptionBox = utils.FINDELEMENT(driver, "GD_DescriptionBoxId")
                 count = 10
                 #
                 #
                 try:
                     KeyProp = utils.FINDELEMENT(OverViewBox, "GD_KeyClassName").text
-                    jobDetails["employer"] = KeyProp
+                    jobDetails[F.JOB_EMPLOYER] = KeyProp
                 except:
-                    jobDetails["employer"] = "Not disclosed"
+                    jobDetails[F.JOB_EMPLOYER] = F.NA
                     pass
-                #
                 #
                 #
                 try:
                     Salary = utils.FINDELEMENT(OverViewBox, "GD_SalaryClassName").text
-                    jobDetails["salary"] = Salary
+                    jobDetails[F.JOB_SALARY] = Salary
                 except:
-                    jobDetails["salary"] = "Not disclosed"
+                    jobDetails[F.JOB_SALARY] = F.NA
                     pass
                 #
                 #
@@ -109,9 +107,9 @@ def start_scraping_glassdoor(
                     Location = utils.FINDELEMENT(
                         OverViewBox, "GD_LocationClassName"
                     ).text
-                    jobDetails["location"] = Location
+                    jobDetails[F.JOB_LOCATION] = Location
                 except:
-                    jobDetails["location"] = "Not disclosed"
+                    jobDetails[F.JOB_LOCATION] = F.NA
                     pass
                 #
                 #
@@ -119,18 +117,10 @@ def start_scraping_glassdoor(
                     DescriptionHTML = utils.FINDELEMENT(
                         DescriptionBox, "GD_JobDescriptionContentClass"
                     ).get_attribute("innerHTML")
-                    jobDetails["job_discription_html"] = DescriptionHTML
+                    jobDetails[F.JOB_DESCRIPTION_HTML] = DescriptionHTML
                 except:
-                    jobDetails["job_discription_html"] = "Not disclosed"
+                    jobDetails[F.JOB_DESCRIPTION_HTML] = F.NA
                     pass
-                #
-                #
-                try:
-                    jobDetails["experience"] = "NA"
-                except:
-                    pass
-                #
-                jobDetails["tags"] = "NA"
                 #
                 if callbackFn:
                     callbackFn(jobDetails)

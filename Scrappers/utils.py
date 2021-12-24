@@ -22,12 +22,33 @@ BY: dict = {
 
 DRIVER_PATH = os.environ["DRIVER_PATH"]
 options = Options()
-# options.headless = True
+options.headless = True
 options.set_preference("devtools.jsonview.enabled", False)
 driverParams = {
     "options": options,
     "executable_path": DRIVER_PATH,
 }
+
+
+class FIELD(object):
+    JOB_ID = "job_id"
+    JOB_DESK = "job_desk"
+    JOB_TITLE = "job_title"
+    JOB_LOCATION = "job_location"
+    JOB_LINK = "job_link"
+    JOB_EMPLOYER = "job_employer"
+    JOB_LOCATION = "job_location"
+    JOB_SALARY = "job_salary"
+    JOB_DESCRIPTION = "job_description"
+    JOB_DESCRIPTION_HTML = "job_description_html"
+    NA = "NA"
+
+
+class JOBDESK(object):
+    INDEED = "indeed"
+    GLASSDOOR = "glassdoor"
+    NAUKRI = "naukri"
+
 
 # constants
 
@@ -38,6 +59,10 @@ def getElementMap() -> dict:
 
 def getDriverParams():
     return driverParams
+
+
+def json_to_dict(json_data: str):
+    return json.loads(json_data)
 
 
 def FINDELEMENT(
@@ -58,6 +83,7 @@ def FINDELEMENT(
 
 
 def print_result(job_data: dict):
-    if not job_data["from"] or not job_data["title"]:
+    if not job_data.get(FIELD.JOB_DESK) or not job_data.get(FIELD.JOB_TITLE):
+        print("No data found")
         return
-    print({"from": job_data.get("from"), "title": job_data.get("title")})
+    print({"from": job_data[FIELD.JOB_DESK], "title": job_data[FIELD.JOB_TITLE]})

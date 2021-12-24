@@ -2,6 +2,8 @@ import ray
 from typing import Callable
 from selenium import webdriver
 import utils as ut
+from utils import FIELD as F
+from utils import JOBDESK as J
 
 
 @ray.remote
@@ -9,9 +11,10 @@ def start_scraping_naukri(
     job_location,
     job_title,
     callbackFn: Callable[[dict], None] = None,
-    utils=ut,
+    utils: ut = ut,
 ):
     print("Starting scraping naukri")
+    print(ut)
     driverParams = utils.getDriverParams()
     driver = webdriver.Firefox(**driverParams)
     driver.maximize_window()
@@ -41,20 +44,22 @@ def start_scraping_naukri(
         except:
             continue
 
-        jobDetails["job_url"] = link
-        jobDetails["from"] = "naukri"
+        jobDetails[F.JOB_LINK] = link
+        jobDetails[F.JOB_DESK] = J.NAUKRI
 
         try:
-            jobDetails["title"] = utils.FINDELEMENT(detailsBox, "NK_titleClass").text
+            jobDetails[F.JOB_TITLE] = utils.FINDELEMENT(
+                detailsBox, "NK_titleClass"
+            ).text
         except:
-            jobDetails["title"] = "NA"
+            jobDetails[F.JOB_TITLE] = "NA"
 
         try:
-            jobDetails["employer"] = utils.FINDELEMENT(
+            jobDetails[F.JOB_EMPLOYER] = utils.FINDELEMENT(
                 detailsBox, "NK_companyName"
             ).text
         except:
-            jobDetails["employer"] = "NA"
+            jobDetails[F.JOB_EMPLOYER] = "NA"
 
         try:
             jobDetails["experience"] = utils.FINDELEMENT(
@@ -64,24 +69,27 @@ def start_scraping_naukri(
             jobDetails["experience"] = "NA"
 
         try:
-            jobDetails["salary"] = utils.FINDELEMENT(detailsBox, "NK_Salary").text
+            jobDetails[F.JOB_SALARY] = utils.FINDELEMENT(detailsBox, "NK_Salary").text
         except:
-            jobDetails["salary"] = "NA"
+            jobDetails[F.JOB_SALARY] = "NA"
 
         try:
-            jobDetails["location"] = utils.FINDELEMENT(detailsBox, "NK_Location").text
+            jobDetails[F.JOB_LOCATION] = utils.FINDELEMENT(
+                detailsBox, "NK_Location"
+            ).text
         except:
-            jobDetails["location"] = "NA"
+            jobDetails[F.JOB_LOCATION] = "NA"
 
         try:
-            jobDetails["job_discription_html"] = utils.FINDELEMENT(
+            jobDetails[F.JOB_DESCRIPTION_HTML] = utils.FINDELEMENT(
                 detailsBox, "NK_DescriptionHTML"
             ).get_attribute("innerHTML")
         except:
-            jobDetails["job_discription_html"] = "NA"
+            jobDetails[F.JOB_DESCRIPTION_HTML] = "NA"
         if callbackFn:
             callbackFn(jobDetails)
         data_list.append(jobDetails)
+    print(data_list)
     return data_list
 
 

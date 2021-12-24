@@ -1,8 +1,9 @@
 import ray
 from typing import Callable
-from selenium.webdriver.common.by import By
 from selenium import webdriver
 import utils as ut
+from utils import FIELD as F
+from utils import JOBDESK as J
 
 
 @ray.remote
@@ -10,7 +11,7 @@ def start_scraping_indeed(
     job_location,
     job_title,
     callbackFn: Callable[[dict], None] = None,
-    utils=ut,
+    utils: ut = ut,
 ):
     print("Starting scraping indeed")
     driverParams = utils.getDriverParams()
@@ -24,56 +25,54 @@ def start_scraping_indeed(
         + ("-".join([i for i in (job_location.lower()).split()]))
     )
     driver.get(link)
-    data_list = []
-    job_card = driver.find_elements(
-        By.XPATH, '//div[contains(@class,"job_seen_beacon")]'
+
+    job_card_list_container = utils.FINDELEMENT(driver, "ID_jobListContainer")
+    job_card_list = utils.FINDELEMENT(
+        job_card_list_container, "ID_jobCard", is_list=True
     )
-    for job in job_card:
+    job_list = []
+    for job_card in job_card_list:
+        # job_card.click()
+        jobDetails = {}
+        jobDetails[F.JOB_DESK] = J.INDEED
         try:
-            review = job.find_element(By.XPATH, './/span[@class="ratingNumber"]').text
+            jobDetails[F.JOB_LINK] = job_card.get_attribute("href")
         except:
-            review = "None"
+            jobDetails[F.JOB_LINK] = F.NA
         try:
-            salary = job.find_element(By.XPATH, './/div[@class="salary-snippet"]').text
+            titleBox = utils.FINDELEMENT(job_card, "ID_titleBox")
+            jobDetails[F.JOB_TITLE] = utils.FINDELEMENT(
+                titleBox, "ID_title", is_list=True
+            )[-1].text
         except:
-            salary = "Not disclosed"
+            jobDetails[F.JOB_TITLE] = F.NA
         try:
-            location = job.find_element(
-                By.XPATH, './/div[contains(@class,"companyLocation")]'
-            ).text
+            empAndLoc = utils.FINDELEMENT(job_card, "ID_empAndLoc")
+            try:
+                jobDetails[F.JOB_EMPLOYER] = utils.FINDELEMENT(empAndLoc, "ID_emp").text
+            except:
+                jobDetails[F.JOB_EMPLOYER] = F.NA
+            try:
+                jobDetails[F.JOB_LOCATION] = utils.FINDELEMENT(empAndLoc, "ID_loc").text
+            except:
+                jobDetails[F.JOB_LOCATION] = F.NA
         except:
-            location = job.find_element(
-                By.XPATH, './/div[@class,"companyLocation"]'
-            ).text
-        company = job.find_element(By.XPATH, './/span[@class="companyName"]').text
+            jobDetails[F.JOB_EMPLOYER] = F.NA
+            jobDetails[F.JOB_LOCATION] = F.NA
         try:
-            title = job.find_element(By.CLASS_NAME, "jobTitle").text
+            jobDetails[F.JOB_SALARY] = utils.FINDELEMENT(job_card, "ID_salary").text
         except:
-            title = job.find_element(
-                By.XPATH, './/h2[@class="jobTitle"]'
-            ).get_attribute(name="span")
-        title_button = job.find_element(By.CLASS_NAME, "jobTitle")
-        title_button.click()
+            jobDetails[F.JOB_SALARY] = F.NA
         try:
-            description = job.find_element(
-                By.XPATH, './/div[@class="job-snippet"]'
-            ).text
+            jobDetails[F.JOB_DESCRIPTION_HTML] = utils.FINDELEMENT(
+                job_card, "ID_descHTML"
+            ).get_attribute("innerHTML")
         except:
-            description = ""
-        url = driver.current_url
-        data = {
-            "title": title,
-            "employer": company,
-            "salary": salary,
-            "location": location,
-            "description": description,
-            "url": url,
-            "review": review,
-            "from": "indeed",
-        }
-        data_list.append(data)
-        callbackFn(data)
-    return data_list
+            jobDetails[F.JOB_DESCRIPTION_HTML] = F.NA
+        if callbackFn:
+            callbackFn(jobDetails)
+        job_list.append(jobDetails)
+    return job_list
 
 
 if __name__ == "__main__":
