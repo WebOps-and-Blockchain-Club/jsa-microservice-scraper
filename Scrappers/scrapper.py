@@ -1,18 +1,19 @@
 import ray
-import utils
-from glassdoor import start_scraping_glassdoor
-from naukri import start_scraping_naukri
-from indeed import start_scraping_indeed
+import Scrappers.utils as utils
+from Scrappers.utils import FIELD as F
+from Scrappers.glassdoor import start_scraping_glassdoor
+from Scrappers.naukri import start_scraping_naukri
+from Scrappers.indeed import start_scraping_indeed
 
 
 class Scrapper:
     def __init__(self) -> None:
         ray.init()
 
-    def start_scraping(self, job_location, job_title, callbackFn=None):
-        if callbackFn is None:
-            callbackFn = utils.print_result
-        return ray.get(
+    def start_scraping(self, job_location, job_title, callbackFn=None) -> list[dict]:
+        # if callbackFn is None:
+        #     callbackFn = utils.print_result
+        job_list = ray.get(
             [
                 start_scraping_glassdoor.remote(
                     job_location, job_title, callbackFn, utils
@@ -25,6 +26,9 @@ class Scrapper:
                 ),
             ]
         )
+        # flaten the list
+        job_list = [item for sublist in job_list for item in sublist]
+        return job_list
 
 
 if __name__ == "__main__":

@@ -2,9 +2,6 @@ import json
 import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
-from dotenv import load_dotenv
-
-load_dotenv()
 
 ElementMap = dict()
 # read from file

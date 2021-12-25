@@ -1,9 +1,9 @@
 import ray
 from typing import Callable
 from selenium import webdriver
-import utils as ut
-from utils import FIELD as F
-from utils import JOBDESK as J
+import Scrappers.utils as ut
+from Scrappers.utils import FIELD as F
+from Scrappers.utils import JOBDESK as J
 
 
 @ray.remote
@@ -14,7 +14,6 @@ def start_scraping_naukri(
     utils: ut = ut,
 ):
     print("Starting scraping naukri")
-    print(ut)
     driverParams = utils.getDriverParams()
     driver = webdriver.Firefox(**driverParams)
     driver.maximize_window()
@@ -62,11 +61,11 @@ def start_scraping_naukri(
             jobDetails[F.JOB_EMPLOYER] = "NA"
 
         try:
-            jobDetails["experience"] = utils.FINDELEMENT(
+            jobDetails["job_experience"] = utils.FINDELEMENT(
                 detailsBox, "NK_Experience"
             ).text
         except:
-            jobDetails["experience"] = "NA"
+            jobDetails["job_experience"] = "NA"
 
         try:
             jobDetails[F.JOB_SALARY] = utils.FINDELEMENT(detailsBox, "NK_Salary").text
@@ -89,7 +88,7 @@ def start_scraping_naukri(
         if callbackFn:
             callbackFn(jobDetails)
         data_list.append(jobDetails)
-    print(data_list)
+    driver.close()
     return data_list
 
 

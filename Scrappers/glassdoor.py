@@ -1,9 +1,9 @@
 import ray
 from typing import Callable
 from selenium import webdriver
-import utils as ut
-from utils import FIELD as F
-from utils import JOBDESK as J
+import Scrappers.utils as ut
+from Scrappers.utils import FIELD as F
+from Scrappers.utils import JOBDESK as J
 
 
 @ray.remote
@@ -22,13 +22,15 @@ def start_scraping_glassdoor(
     locationIDLink = f"https://www.glassdoor.co.in/util/ajax/findLocationsByFullText.htm?locationSearchString={job_location}&allowPostalCodes=true"
 
     driver.get(locationIDLink)
+    try:
+        jsonRes = utils.FINDELEMENT(driver, "GD_jsonRes").text
+        jsonRes = ut.json_to_dict(jsonRes)
 
-    jsonRes = utils.FINDELEMENT(driver, "GD_jsonRes").text
-    jsonRes = ut.json_to_dict(jsonRes)
-
-    locDet = jsonRes["locations"][0]
-    locID = str(locDet["id"])
-    locType = locDet["type"]
+        locDet = jsonRes["locations"][0]
+        locID = str(locDet["id"])
+        locType = locDet["type"]
+    except:
+        return []
 
     link = (
         "https://www.glassdoor.co.in/Job/jobs.htm?suggestCount=0&suggestChosen=false&clickSource=searchBtn&typedKeyword="
@@ -57,8 +59,11 @@ def start_scraping_glassdoor(
     try_close_popup()
     # scrape job list
     jobDetailsList = []
-    dataset = utils.FINDELEMENT(driver, "GD_jobListPath")
-    datasetList = utils.FINDELEMENT(dataset, "GD_datasetList", is_list=True)
+    try:
+        dataset = utils.FINDELEMENT(driver, "GD_jobListPath")
+        datasetList = utils.FINDELEMENT(dataset, "GD_datasetList", is_list=True)
+    except:
+        return []
     for jobCard in datasetList:
         try:
             jobCard.click()
@@ -129,6 +134,7 @@ def start_scraping_glassdoor(
                 pass
             if count > 5:
                 break
+    driver.close()
     return jobDetailsList
 
 

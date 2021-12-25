@@ -1,9 +1,9 @@
 import ray
 from typing import Callable
 from selenium import webdriver
-import utils as ut
-from utils import FIELD as F
-from utils import JOBDESK as J
+import Scrappers.utils as ut
+from Scrappers.utils import FIELD as F
+from Scrappers.utils import JOBDESK as J
 
 
 @ray.remote
@@ -25,11 +25,13 @@ def start_scraping_indeed(
         + ("-".join([i for i in (job_location.lower()).split()]))
     )
     driver.get(link)
-
-    job_card_list_container = utils.FINDELEMENT(driver, "ID_jobListContainer")
-    job_card_list = utils.FINDELEMENT(
-        job_card_list_container, "ID_jobCard", is_list=True
-    )
+    try:
+        job_card_list_container = utils.FINDELEMENT(driver, "ID_jobListContainer")
+        job_card_list = utils.FINDELEMENT(
+            job_card_list_container, "ID_jobCard", is_list=True
+        )
+    except:
+        return []
     job_list = []
     for job_card in job_card_list:
         # job_card.click()
@@ -72,6 +74,7 @@ def start_scraping_indeed(
         if callbackFn:
             callbackFn(jobDetails)
         job_list.append(jobDetails)
+    driver.close()
     return job_list
 
 
