@@ -2,3 +2,4 @@ flask
 pymongo
 selenium
 python-dotenv
+ray
