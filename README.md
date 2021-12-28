@@ -13,10 +13,10 @@ An API to collect the job postings data from [Indeed](https://indeed.com), [Nauk
 
 # Guide to use API
 
-| URI         | HTTP Method | Inputs                                                                                          | Description                                         |
-| ----------- | ----------- | ----------------------------------------------------------------------------------------------- | --------------------------------------------------- |
-| /           | GET         | null                                                                                            | To ensure server is running                         |
-| /job-search | GET         | JSON form-data with `job` ( Preferred Job Title ) and `location` ( Preferred Location for Job ) | Return the data collected from job posting websites |
+| URI         | HTTP Method | Inputs                                                                                                  | Description                                         |
+| ----------- | ----------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| /           | GET         | null                                                                                                    | To ensure server is running                         |
+| /job-search | GET         | query params with `job_title` ( Preferred Job Title ) and `job_location` ( Preferred Location for Job ) | Return the data collected from job posting websites |
 
 # Google Colaboratory
 

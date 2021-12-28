@@ -1,12 +1,11 @@
-from flask import Flask, jsonify
-import flask
-import pymongo
-from pymongo import MongoClient
+from flask import Flask
 from dotenv import load_dotenv
+from Scrappers.models import CustomJsonEncoder
 
 load_dotenv()
 
 app = Flask(__name__)
+app.json_encoder = CustomJsonEncoder
 
 import routes
 

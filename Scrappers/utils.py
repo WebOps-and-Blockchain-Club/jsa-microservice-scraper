@@ -2,6 +2,7 @@ import json
 import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
+from Scrappers.models import Job
 
 ElementMap = dict()
 # read from file
@@ -19,7 +20,7 @@ BY: dict = {
 
 DRIVER_PATH = os.environ["DRIVER_PATH"]
 options = Options()
-options.headless = True
+# options.headless = True
 options.set_preference("devtools.jsonview.enabled", False)
 driverParams = {
     "options": options,
@@ -84,3 +85,10 @@ def print_result(job_data: dict):
         print("No data found")
         return
     print({"from": job_data[FIELD.JOB_DESK], "title": job_data[FIELD.JOB_TITLE]})
+
+
+def printResult(job_data: Job):
+    if not job_data.DESK or not job_data.TITLE:
+        print("No data found")
+        return
+    print({"from": job_data.DESK, "title": job_data.TITLE})
