@@ -32,7 +32,7 @@ class Job:
         return str(d)
 
     def __repr__(self):
-        return self.dict()
+        return self.__str__()
 
     def dict(self):
         return {
