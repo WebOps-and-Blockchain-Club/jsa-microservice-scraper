@@ -46,6 +46,7 @@ class JOBDESK(object):
     INDEED = "indeed"
     GLASSDOOR = "glassdoor"
     NAUKRI = "naukri"
+    TIMESJOBS ="timesjobs"
 
 
 # constants

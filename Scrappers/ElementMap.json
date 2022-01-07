@@ -39,5 +39,21 @@
   "ID_salary": ["CLASS_NAME", "salary-snippet"],
   "ID_descHTML": ["CLASS_NAME", "job-snippet"],
   "ID_iframe": ["ID", "vjs-container-iframe"],
-  "ID_iframeDescHTML": ["ID", "jobDescriptionText"]
+  "ID_iframeDescHTML": ["ID", "jobDescriptionText"],
+  "TJ_datalist" : ["XPATH","/html/body/div[3]/div[4]/section/div[2]/div[2]/ul/li"],
+  "TJ_companyName" : ["CLASS_NAME","joblist-comp-name"],
+  "TJ_jobID" : ["CLASS_NAME","jd-jobid"],
+  "TJ_descriptionHTML" : ["CLASS_NAME","jd-more-dtl"],
+  "TJ_modal" : ["ID","GB_window"],
+  "TJ_modalclosebtn" : ["ID","closeSpanId"],
+  "TJ_titleheading" : ["TAG_NAME","h2"],
+  "TJ_titleanchor" : ["TAG_NAME","a"],
+  "TJ_detailsbox1" : ["CLASS_NAME","top-jd-dtl"],
+  "TJ_detailsbox2" : ["CLASS_NAME","list-job-dtl"],
+  "TJ_listitem" : ["TAG_NAME","li"],
+  "TJ_JD" : ["CLASS_NAME","jd-more-dtl"],
+  "TJ_JDMAIN" : ["CLASS_NAME","jd-desc"]
+
+
+
 }
