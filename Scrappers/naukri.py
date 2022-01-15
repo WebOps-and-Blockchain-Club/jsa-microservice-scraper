@@ -1,9 +1,14 @@
+if __name__ == "__main__":
+    import os
+    import sys
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+
 import ray
 from typing import Callable
 from selenium import webdriver
 import Scrappers.utils as ut
-from Scrappers.utils import FIELD as F
-from Scrappers.utils import JOBDESK as J
+from Scrappers.models import Job, JOBDESK as JD
 
 
 @ray.remote
@@ -12,7 +17,18 @@ def start_scraping_naukri(
     job_title,
     callbackFn: Callable[[dict], None] = None,
     utils: ut = ut,
-):
+) -> list[Job]:
+    """
+    Scrapes naukri.com for job listings.
+    @params:
+        job_location: string
+        job_title: string
+        callbackFn: (Job) -> None | None --optional
+        utils: Module("utils") -- optional
+    Returns:
+        list[Job]: list of job listing from glassdoor.com
+    """
+    # Initialize webdriver
     print("Starting scraping naukri")
     driverParams = utils.getDriverParams()
     driver = webdriver.Firefox(**driverParams)
@@ -25,79 +41,89 @@ def start_scraping_naukri(
         + ("-".join([i for i in (job_location.lower()).split()]))
     )
     driver.get(link)
+    try:
+        jobCardListContainer = utils.FINDELEMENT(
+            driver, "NK_jobCardListContainer")
+        dataset_list = utils.FINDELEMENT(
+            jobCardListContainer, "NK_jobCard", True)
+        links = []
+        for data in dataset_list:
+            id = data.get_attribute("data-job-id")
+            link = utils.FINDELEMENT(data, "NK_link").get_attribute("href")
+            links.append([link, id])
+    except:
+        driver.close()
+        return []
 
-    jobCardListContainer = utils.FINDELEMENT(driver, "NK_jobCardListContainer")
-    dataset_list = utils.FINDELEMENT(jobCardListContainer, "NK_jobCard", True)
-    links = []
-    for data in dataset_list:
-        link = utils.FINDELEMENT(data, "NK_link").get_attribute("href")
-        links.append(link)
-
-    data_list = []
+    jobDetailsList: list[Job] = []
     for link in links:
-        driver.get(link)
+        driver.get(link[0])
         driver.implicitly_wait(0.3)
-        jobDetails = {}
+        job = Job()
+
+        job.DESK = JD.NAUKRI.value
+        job.LINK = link[0]
+        job.ID = 'NK_' + str(link[1])
         try:
             detailsBox = utils.FINDELEMENT(driver, "NK_LeftSection")
         except:
             continue
 
-        jobDetails[F.JOB_LINK] = link
-        jobDetails[F.JOB_DESK] = J.NAUKRI
-
         try:
-            jobDetails[F.JOB_TITLE] = utils.FINDELEMENT(
+            job.TITLE = utils.FINDELEMENT(
                 detailsBox, "NK_titleClass"
             ).text
         except:
-            jobDetails[F.JOB_TITLE] = "NA"
+            pass
 
         try:
-            jobDetails[F.JOB_EMPLOYER] = utils.FINDELEMENT(
+            job.EMPLOYER = utils.FINDELEMENT(
                 detailsBox, "NK_companyName"
             ).text
         except:
-            jobDetails[F.JOB_EMPLOYER] = "NA"
+            pass
 
         try:
-            jobDetails["job_experience"] = utils.FINDELEMENT(
+            job['Experience'] = utils.FINDELEMENT(
                 detailsBox, "NK_Experience"
             ).text
         except:
-            jobDetails["job_experience"] = "NA"
-
+            pass
         try:
-            jobDetails[F.JOB_SALARY] = utils.FINDELEMENT(detailsBox, "NK_Salary").text
+            job.SALARY = utils.FINDELEMENT(
+                detailsBox, "NK_Salary").text
         except:
-            jobDetails[F.JOB_SALARY] = "NA"
+            pass
 
         try:
-            jobDetails[F.JOB_LOCATION] = utils.FINDELEMENT(
+            job.LOCATION = utils.FINDELEMENT(
                 detailsBox, "NK_Location"
             ).text
         except:
-            jobDetails[F.JOB_LOCATION] = "NA"
+            pass
 
         try:
-            jobDetails[F.JOB_DESCRIPTION_HTML] = utils.FINDELEMENT(
+            job.DESC_HTML = utils.FINDELEMENT(
                 detailsBox, "NK_DescriptionHTML"
             ).get_attribute("innerHTML")
         except:
-            jobDetails[F.JOB_DESCRIPTION_HTML] = "NA"
+            pass
         if callbackFn:
-            callbackFn(jobDetails)
-        data_list.append(jobDetails)
+            callbackFn(job)
+        # data_list.append(jobDetails)
+        jobDetailsList.append(job)
     driver.close()
-    return data_list
+    return jobDetailsList
 
 
 if __name__ == "__main__":
     ray.init()
-    ray.get(
+    job_list = ray.get(
         [
             start_scraping_naukri.remote(
-                "Pune", "Data Scientist", callbackFn=ut.print_result
+                "Pune", "Data Scientist", callbackFn=ut.printResult
             )
         ]
     )
+    job_list = [item for sublist in job_list for item in sublist]
+    print(job_list)

@@ -1,9 +1,14 @@
+if __name__ == "__main__":
+    import os
+    import sys
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+
 import ray
 from typing import Callable
 from selenium import webdriver
 import Scrappers.utils as ut
-from Scrappers.utils import FIELD as F
-from Scrappers.utils import JOBDESK as J
+from Scrappers.models import Job, JOBDESK as JD
 
 
 @ray.remote
@@ -12,7 +17,7 @@ def start_scraping_indeed(
     job_title,
     callbackFn: Callable[[dict], None] = None,
     utils: ut = ut,
-):
+) -> list[Job]:
     print("Starting scraping indeed")
     driverParams = utils.getDriverParams()
     driver = webdriver.Firefox(**driverParams)
@@ -26,64 +31,69 @@ def start_scraping_indeed(
     )
     driver.get(link)
     try:
-        job_card_list_container = utils.FINDELEMENT(driver, "ID_jobListContainer")
+        job_card_list_container = utils.FINDELEMENT(
+            driver, "ID_jobListContainer")
         job_card_list = utils.FINDELEMENT(
             job_card_list_container, "ID_jobCard", is_list=True
         )
     except:
         return []
-    job_list = []
+    jobDetailsList: list[Job] = []
     for job_card in job_card_list:
-        # job_card.click()
-        jobDetails = {}
-        jobDetails[F.JOB_DESK] = J.INDEED
+        job = Job()
+        job.DESK = JD.INDEED.value
         try:
-            jobDetails[F.JOB_LINK] = job_card.get_attribute("href")
+            job.LINK = job_card.get_attribute("href")
         except:
-            jobDetails[F.JOB_LINK] = F.NA
+            pass
+        try:
+            job.ID = 'IN_' + str(job_card.get_attribute('id'))
+        except:
+            pass
         try:
             titleBox = utils.FINDELEMENT(job_card, "ID_titleBox")
-            jobDetails[F.JOB_TITLE] = utils.FINDELEMENT(
+            job.TITLE = utils.FINDELEMENT(
                 titleBox, "ID_title", is_list=True
             )[-1].text
         except:
-            jobDetails[F.JOB_TITLE] = F.NA
+            pass
         try:
             empAndLoc = utils.FINDELEMENT(job_card, "ID_empAndLoc")
             try:
-                jobDetails[F.JOB_EMPLOYER] = utils.FINDELEMENT(empAndLoc, "ID_emp").text
+                job.EMPLOYER = utils.FINDELEMENT(empAndLoc, "ID_emp").text
             except:
-                jobDetails[F.JOB_EMPLOYER] = F.NA
+                pass
             try:
-                jobDetails[F.JOB_LOCATION] = utils.FINDELEMENT(empAndLoc, "ID_loc").text
+                job.LOCATION = utils.FINDELEMENT(empAndLoc, "ID_loc").text
             except:
-                jobDetails[F.JOB_LOCATION] = F.NA
+                pass
         except:
-            jobDetails[F.JOB_EMPLOYER] = F.NA
-            jobDetails[F.JOB_LOCATION] = F.NA
+            pass
         try:
-            jobDetails[F.JOB_SALARY] = utils.FINDELEMENT(job_card, "ID_salary").text
+            job.SALARY = utils.FINDELEMENT(job_card, "ID_salary").text
         except:
-            jobDetails[F.JOB_SALARY] = F.NA
+            pass
         try:
-            jobDetails[F.JOB_DESCRIPTION_HTML] = utils.FINDELEMENT(
+            job.DESC_HTML = utils.FINDELEMENT(
                 job_card, "ID_descHTML"
             ).get_attribute("innerHTML")
         except:
-            jobDetails[F.JOB_DESCRIPTION_HTML] = F.NA
+            pass
         if callbackFn:
-            callbackFn(jobDetails)
-        job_list.append(jobDetails)
+            callbackFn(job)
+        jobDetailsList.append(job)
     driver.close()
-    return job_list
+    return jobDetailsList
 
 
 if __name__ == "__main__":
     ray.init()
-    ray.get(
+    job_list = ray.get(
         [
             start_scraping_indeed.remote(
-                "Pune", "Data Scientist", callbackFn=ut.print_result
+                "Pune", "Data Scientist", callbackFn=ut.printResult
             )
         ]
     )
+    job_list = [item for sublist in job_list for item in sublist]
+    print(job_list)

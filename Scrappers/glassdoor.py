@@ -1,9 +1,14 @@
+if __name__ == "__main__":
+    import os
+    import sys
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+
 import ray
 from typing import Callable
 from selenium import webdriver
 import Scrappers.utils as ut
-from Scrappers.utils import JOBDESK as J
-from Scrappers.models import Job
+from Scrappers.models import Job, JOBDESK as JD
 
 
 @ray.remote
@@ -72,7 +77,8 @@ def start_scraping_glassdoor(
     # get all job cards on page
     try:
         dataset = utils.FINDELEMENT(driver, "GD_jobListPath")
-        datasetList = utils.FINDELEMENT(dataset, "GD_datasetList", is_list=True)
+        datasetList = utils.FINDELEMENT(
+            dataset, "GD_datasetList", is_list=True)
     except:
         driver.close()
         return []
@@ -91,7 +97,7 @@ def start_scraping_glassdoor(
 
         # get job details
         job = Job()
-        job.DESK = J.GLASSDOOR
+        job.DESK = JD.GLASSDOOR.value
 
         # get job id from glassdoor
         try:
@@ -114,10 +120,13 @@ def start_scraping_glassdoor(
             driver.implicitly_wait(0.1)
             try:
                 AllDetailsBox = utils.FINDELEMENT(driver, "GD_DetailsBoxID")
-                OverViewBox = utils.FINDELEMENT(AllDetailsBox, "GD_OverViewBoxClass")
-                Title = utils.FINDELEMENT(OverViewBox, "GD_TitleClassName").text
+                OverViewBox = utils.FINDELEMENT(
+                    AllDetailsBox, "GD_OverViewBoxClass")
+                Title = utils.FINDELEMENT(
+                    OverViewBox, "GD_TitleClassName").text
                 job.TITLE = Title
-                DescriptionBox = utils.FINDELEMENT(driver, "GD_DescriptionBoxId")
+                DescriptionBox = utils.FINDELEMENT(
+                    driver, "GD_DescriptionBoxId")
                 break
             except:
                 continue
@@ -142,7 +151,8 @@ def start_scraping_glassdoor(
 
         # get job location
         try:
-            Location = utils.FINDELEMENT(OverViewBox, "GD_LocationClassName").text
+            Location = utils.FINDELEMENT(
+                OverViewBox, "GD_LocationClassName").text
             job.LOCATION = Location
         except:
 

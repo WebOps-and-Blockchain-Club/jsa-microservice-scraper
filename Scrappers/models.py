@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 from json import JSONEncoder
 from flask.json import JSONEncoder as JsonEncoder
 
@@ -46,6 +47,12 @@ class Job:
             "description": self.DESC,
             "description_html": self.DESC_HTML,
         }
+
+
+class JOBDESK(Enum):
+    GLASSDOOR: str = "glassdoor"
+    NAUKRI: str = "naukri"
+    INDEED: str = "indeed"
 
 
 class CustomJSONEncoder(JSONEncoder):

@@ -1,6 +1,11 @@
+if __name__ == "__main__":
+    import os
+    import sys
+    sys.path.append(os.path.dirname(
+        os.path.dirname(os.path.abspath(__file__))))
+
 import ray
 import Scrappers.utils as utils
-from Scrappers.utils import FIELD as F
 from Scrappers.glassdoor import start_scraping_glassdoor
 from Scrappers.naukri import start_scraping_naukri
 from Scrappers.indeed import start_scraping_indeed
@@ -12,7 +17,7 @@ class Scrapper:
 
     def start_scraping(self, job_location, job_title, callbackFn=None) -> list[dict]:
         # if callbackFn is None:
-        #     callbackFn = utils.print_result
+        #     callbackFn = utils.printResult
         job_list = ray.get(
             [
                 start_scraping_glassdoor.remote(
@@ -31,9 +36,11 @@ class Scrapper:
         return job_list
 
 
-if __name__ == "__main__":
+def main():
     scrapper = Scrapper()
     res = scrapper.start_scraping("Hyderabad", "Data Scientist")
-    sitesCount = len(res)
-    print(f"Total jobs found: {sitesCount}")
-    print([len(i) for i in res])
+    print(res)
+
+
+if __name__ == "__main__":
+    main()

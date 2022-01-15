@@ -28,29 +28,6 @@ driverParams = {
 }
 
 
-class FIELD(object):
-    JOB_ID = "job_id"
-    JOB_DESK = "job_desk"
-    JOB_TITLE = "job_title"
-    JOB_LOCATION = "job_location"
-    JOB_LINK = "job_link"
-    JOB_EMPLOYER = "job_employer"
-    JOB_LOCATION = "job_location"
-    JOB_SALARY = "job_salary"
-    JOB_DESCRIPTION = "job_description"
-    JOB_DESCRIPTION_HTML = "job_description_html"
-    NA = "NA"
-
-
-class JOBDESK(object):
-    INDEED = "indeed"
-    GLASSDOOR = "glassdoor"
-    NAUKRI = "naukri"
-
-
-# constants
-
-
 def getElementMap() -> dict:
     return ElementMap
 
@@ -78,13 +55,6 @@ def FINDELEMENT(
     if is_list:
         return element.find_elements(BY[by], value)
     return element.find_element(BY[by], value)
-
-
-def print_result(job_data: dict):
-    if not job_data.get(FIELD.JOB_DESK) or not job_data.get(FIELD.JOB_TITLE):
-        print("No data found")
-        return
-    print({"from": job_data[FIELD.JOB_DESK], "title": job_data[FIELD.JOB_TITLE]})
 
 
 def printResult(job_data: Job):
