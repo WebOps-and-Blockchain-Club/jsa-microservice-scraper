@@ -18,7 +18,7 @@ BY: dict = {
     "TAG_NAME": By.TAG_NAME,
 }
 
-DRIVER_PATH = os.environ["DRIVER_PATH"]
+DRIVER_PATH = 'D:\driver\geckodriver.exe'
 options = Options()
 # options.headless = True
 options.set_preference("devtools.jsonview.enabled", False)
@@ -28,12 +28,19 @@ driverParams = {
 }
 
 
-def getElementMap() -> dict:
+def getElementMap():
     return ElementMap
 
 
 def getDriverParams():
     return driverParams
+
+
+def tryCloseDreiver(driver):
+    try:
+        driver.close()
+    except:
+        pass
 
 
 def json_to_dict(json_data: str):
