@@ -28,12 +28,19 @@ driverParams = {
 }
 
 
-def getElementMap() -> dict:
+def getElementMap():
     return ElementMap
 
 
 def getDriverParams():
     return driverParams
+
+
+def tryCloseDreiver(driver):
+    try:
+        driver.close()
+    except:
+        pass
 
 
 def json_to_dict(json_data: str):
