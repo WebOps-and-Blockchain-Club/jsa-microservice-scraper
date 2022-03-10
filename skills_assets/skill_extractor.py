@@ -1,4 +1,5 @@
 class SkillExtractor:
+    import pathlib
     import re
     import nltk
     import pickle
@@ -8,7 +9,8 @@ class SkillExtractor:
     nltk.download('wordnet')
     nltk.download('punkt')
     nltk.download('omw-1.4')
-    skills_list = pickle.load(open("./skills_assets/skill.pylist", "rb"))
+    curr_dir = str(pathlib.Path(__file__).parent.resolve())+"/skill.pylist"
+    skills_list = pickle.load(open(curr_dir, "rb"))
 
     def get_skills(self, data):
         try:
@@ -22,5 +24,6 @@ class SkillExtractor:
             return list(skills)
         except Exception as e:
             err_msg = e.args
+            print(e)
             #TODO: Add Nodemailer and log files
-            return ['Error in Skill Extractor']
+            return ['Error in Skill Extractor'+str(e)]

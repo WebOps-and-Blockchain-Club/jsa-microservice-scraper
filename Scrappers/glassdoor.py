@@ -4,11 +4,13 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
 
+from skills_assets.skill_extractor import SkillExtractor
 import ray
 from typing import Callable
 from selenium import webdriver
 import Scrappers.utils as ut
 from Scrappers.models import Job, JOBDESK as JD, ScrapperResponce as SR, ErrMsg
+from skills_assets.skill_extractor import SkillExtractor
 
 
 @ray.remote
@@ -152,7 +154,6 @@ def start_scraping_glassdoor(
                     OverViewBox, "GD_SalaryClassName").text
                 job.SALARY = Salary
             except:
-
                 pass
 
             # get job location
@@ -171,6 +172,14 @@ def start_scraping_glassdoor(
                 )
                 job.DESC = Description.text
                 job.DESC_HTML = Description.get_attribute("innerHTML")
+            except:
+                pass
+
+            #get job skills
+            try:
+                skillextractor = SkillExtractor()
+                skills = skillextractor.get_skills(job.DESC_HTML)
+                job.SKILLS = skills
             except:
                 pass
 

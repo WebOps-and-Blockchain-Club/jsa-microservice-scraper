@@ -4,6 +4,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
 
+from skills_assets.skill_extractor import SkillExtractor
 import ray
 from typing import Callable
 from selenium import webdriver
@@ -82,6 +83,15 @@ def start_scraping_indeed(
                 ).get_attribute("innerHTML")
             except:
                 pass
+
+            #get job skills
+            try:
+                skillextractor = SkillExtractor()
+                skills = skillextractor.get_skills(job.DESC_HTML)
+                job.SKILLS = skills
+            except:
+                pass
+
             if callbackFn:
                 callbackFn(job)
             jobDetailsList.append(job)

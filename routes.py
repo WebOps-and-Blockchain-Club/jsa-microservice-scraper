@@ -1,3 +1,4 @@
+from cmath import e
 from email import message
 import json
 import flask
@@ -70,9 +71,9 @@ def getSkills():
             skills = skill_extractor.get_skills(text)
             return jsonify({"data":skills, "message":"success"})
         
-    except:
+    except Exception as e:
         return(
             jsonify(
-                {"message":"could not etract skills, error in Skill Extractor"}
+                {"message":"could not etract skills, error in Skill Extractor"+str(e)}
             )
         )

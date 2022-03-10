@@ -4,6 +4,7 @@ if __name__ == "__main__":
     sys.path.append(os.path.dirname(
         os.path.dirname(os.path.abspath(__file__))))
 
+from skills_assets.skill_extractor import SkillExtractor
 import ray
 from typing import Callable
 from selenium import webdriver
@@ -109,12 +110,22 @@ def start_scraping_naukri(
                 ).get_attribute("innerHTML")
             except:
                 pass
+
+            #get job skills
+            try:
+                skillextractor = SkillExtractor()
+                skills = skillextractor.get_skills(job.DESC_HTML)
+                job.SKILLS = skills
+            except:
+                pass
+
             if callbackFn:
                 callbackFn(job)
             # data_list.append(jobDetails)
             jobDetailsList.append(job)
         utils.tryCloseDreiver(driver)
         return SR(DATA=jobDetailsList)
+
     except Exception as e:
         utils.tryCloseDreiver(driver)
         err = ErrMsg(job_location, job_title, str(e), JD.INDEED.value)
