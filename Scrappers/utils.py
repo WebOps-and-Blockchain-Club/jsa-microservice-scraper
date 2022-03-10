@@ -18,7 +18,7 @@ BY: dict = {
     "TAG_NAME": By.TAG_NAME,
 }
 
-DRIVER_PATH = 'D:\driver\geckodriver.exe'
+DRIVER_PATH = "D:/driver/geckodriver.exe"
 options = Options()
 # options.headless = True
 options.set_preference("devtools.jsonview.enabled", False)

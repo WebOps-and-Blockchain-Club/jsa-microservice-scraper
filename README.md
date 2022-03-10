@@ -17,6 +17,7 @@ An API to collect the job postings data from [Indeed](https://indeed.com), [Nauk
 | ----------- | ----------- | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
 | /           | GET         | null                                                                                                    | To ensure server is running                         |
 | /job-search | GET         | query params with `job_title` ( Preferred Job Title ) and `job_location` ( Preferred Location for Job ) | Return the data collected from job posting websites |
+| /get-skills | POST         | json with key `"text"` and value as string from which skill to be extracted (Job Discription) | Extracts and returns skills found in given text |
 
 # Google Colaboratory
 
@@ -24,3 +25,4 @@ An API to collect the job postings data from [Indeed](https://indeed.com), [Nauk
 2. Code to get data from **Indeed** - [Link](https://colab.research.google.com/drive/18C01SBBMLyRF-FefuAf2Xb9TVhhjCpF3?usp=sharing)
 3. Code to get data from **Naukri** - [Link](https://colab.research.google.com/drive/1-XtGHOZaJ-N8TBYsK9eDvzn8VkU8bD2X?usp=sharing)
 4. Code to get data from **Glassdoor** - [Link](https://colab.research.google.com/drive/1vUdJWHE3Lj-I9YY38ZjLLHKoQLfgjyyW?usp=sharing)
+5. Code to **Extract Skills from Text** - [Link](https://colab.research.google.com/drive/1aV34wXI8or-U5kzwKtby28eC8zq-ArZV#scrollTo=7C5WPb8lWUwV)

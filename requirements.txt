@@ -2,3 +2,5 @@ flask
 selenium
 python-dotenv
 ray
+nltk
+requests
