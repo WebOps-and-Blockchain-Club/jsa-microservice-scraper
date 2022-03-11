@@ -1,13 +1,14 @@
 from flask import Flask, jsonify
 from dotenv import load_dotenv
-import flask
+from flask import jsonify, request
+import json
 from skills_assets.skill_extractor import SkillExtractor
 from Scrappers.models import CustomJsonEncoder
 from Scrappers.scrapper import Scrapper
 
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(_name_)
 app.json_encoder = CustomJsonEncoder
 
 
@@ -60,28 +61,31 @@ Returns:
         data:Array
         message:String
 """
+
+
 @app.route("/get-skills", methods=["GET", "POST"])
 def getSkills():
     try:
-        if request.method=="POST":
+        if request.method == "POST":
             text = request.get_json()['text']
         else:
-            return json({"message":"request error"})
+            return json({"message": "request error"})
 
-        if len(text)==0:
-            return jsonify({"data":[], "message":"empty input given"})
+        if len(text) == 0:
+            return jsonify({"data": [], "message": "empty input given"})
         else:
             skill_extractor = SkillExtractor()
             skills = skill_extractor.get_skills(text)
-            return jsonify({"data":skills, "message":"success"})
-        
+            return jsonify({"data": skills, "message": "success"})
+
     except Exception as e:
         return(
             jsonify(
-                {"message":"could not etract skills, error in Skill Extractor"+str(e)}
+                {"message": "could not etract skills, error in Skill Extractor" +
+                    str(e)}
             )
         )
 
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     app.run(debug=True, host="localhost", port=5000)
