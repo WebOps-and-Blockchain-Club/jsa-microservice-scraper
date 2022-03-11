@@ -1,8 +1,11 @@
 import json
+from dotenv import load_dotenv
 import os
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
 from Scrappers.models import Job
+
+load_dotenv()
 
 ElementMap = dict()
 # read from file
@@ -18,9 +21,9 @@ BY: dict = {
     "TAG_NAME": By.TAG_NAME,
 }
 
-DRIVER_PATH = "D:/driver/geckodriver.exe"
+DRIVER_PATH = os.environ["DRIVER_PATH"]
 options = Options()
-# options.headless = True
+options.headless = True
 options.set_preference("devtools.jsonview.enabled", False)
 driverParams = {
     "options": options,
