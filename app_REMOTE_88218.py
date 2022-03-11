@@ -87,10 +87,5 @@ def getSkills():
         )
 
 
-<<<<<<< HEAD
-if __name__ == "__main__":
-    app.run(debug=True, host="localhost", port=8000)
-=======
 if _name_ == "_main_":
     app.run(debug=True, host="localhost", port=5000)
->>>>>>> 76acbfc1622c9d38c797797701e4399be0920dff
