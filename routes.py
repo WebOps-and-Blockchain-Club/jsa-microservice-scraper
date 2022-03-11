@@ -46,34 +46,3 @@ def jobSearch():
     except Exception as e:
         return jsonify({"message": f"Something went wrong. {e}"})
 
-"""[summary]
-@params:
-    json:
-        text:String
-
-Returns:
-    json: 
-        data:Array
-        message:String
-"""
-@app.route("/get-skills", methods=["GET", "POST"])
-def getSkills():
-    try:
-        if request.method=="POST":
-            text = request.get_json()['text']
-        else:
-            return json({"message":"request error"})
-
-        if len(text)==0:
-            return jsonify({"data":[], "message":"empty input given"})
-        else:
-            skill_extractor = SkillExtractor()
-            skills = skill_extractor.get_skills(text)
-            return jsonify({"data":skills, "message":"success"})
-        
-    except Exception as e:
-        return(
-            jsonify(
-                {"message":"could not etract skills, error in Skill Extractor"+str(e)}
-            )
-        )

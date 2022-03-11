@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from dotenv import load_dotenv
 import flask
+from skills_assets.skill_extractor import SkillExtractor
 from Scrappers.models import CustomJsonEncoder
 from Scrappers.scrapper import Scrapper
 
@@ -46,7 +47,40 @@ def jobSearch():
             job_title=job_title, job_location=job_location)
         return jsonify(data)
     except Exception as e:
-        return jsonify({"message": f"Something went wrong. {e}"})
+        return jsonify({"message": "Something went wrong."+str(e)})
+
+
+"""[summary]
+@params:
+    json:
+        text:String
+
+Returns:
+    json: 
+        data:Array
+        message:String
+"""
+@app.route("/get-skills", methods=["GET", "POST"])
+def getSkills():
+    try:
+        if request.method=="POST":
+            text = request.get_json()['text']
+        else:
+            return json({"message":"request error"})
+
+        if len(text)==0:
+            return jsonify({"data":[], "message":"empty input given"})
+        else:
+            skill_extractor = SkillExtractor()
+            skills = skill_extractor.get_skills(text)
+            return jsonify({"data":skills, "message":"success"})
+        
+    except Exception as e:
+        return(
+            jsonify(
+                {"message":"could not etract skills, error in Skill Extractor"+str(e)}
+            )
+        )
 
 
 if __name__ == "__main__":
